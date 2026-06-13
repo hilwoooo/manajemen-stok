@@ -134,6 +134,25 @@ CREATE TABLE `tabel_riwayat_stok` (
   `keterangan` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+--
+-- Struktur dari tabel `tabel_kategori`
+--
+CREATE TABLE tabel_kategori (
+    id_kategori INT AUTO_INCREMENT PRIMARY KEY,
+    nama_kategori VARCHAR(100) NOT NULL
+);
+
+--
+-- Tambah Data di Tabel Kategori
+--
+INSERT INTO tabel_kategori (nama_kategori) VALUES
+('Sparepart'),
+('Unit Laptop');
+
+
+
+
 --
 -- Dumping data untuk tabel `tabel_riwayat_stok`
 --
@@ -316,6 +335,9 @@ ALTER TABLE `tabel_riwayat_stok`
 ALTER TABLE `tabel_servis`
   ADD CONSTRAINT `tabel_servis_ibfk_1` FOREIGN KEY (`id_barang`) REFERENCES `tabel_barang` (`id_barang`) ON DELETE SET NULL;
 COMMIT;
+
+
+ALTER TABLE `master_katalog` ADD FOREIGN KEY (`id_kategori`) REFERENCES `tabel_kategori`(`id_kategori`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -1,5 +1,7 @@
 <?php
-include('../koneksi.php');
+require_once __DIR__ . '/../Config/koneksi.php';
+
+global $koneksi;
 
 // ====================================================================
 // 1. PROSES TAMBAH ANTREAN SERVIS
@@ -79,7 +81,7 @@ if (isset($_POST['servis_selesai'])) {
                                     VALUES ('$id_katalog', 'KELUAR', 1, '$keterangan_servis')");
         }
 
-        echo "<script>alert('Servis Telah Selesai! Stok Batch (FIFO) & Master Katalog Berhasil Dipotong Serta Jurnal Tercatat.'); window.location='../servis_tampil.php';</script>";
+        echo "<script>alert('Servis Telah Selesai! Stok Batch (FIFO) & Master Katalog Berhasil Dipotong Serta Jurnal Tercatat.'); window.location='/manajemen-stok/Views/Service/service_tampil.php';</script>";
     } else {
         echo "Error: " . mysqli_error($koneksi);
     }

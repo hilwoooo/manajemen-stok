@@ -1,6 +1,8 @@
 <?php
 include('../koneksi.php');
 
+global $koneksi;
+
 //tambah
 if (isset($_POST['tambah_penjualan'])) {
     $id_barang    = $_POST['id_barang']; 

@@ -4,12 +4,14 @@
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-desktop"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Oyen Comp <sup>v1</sup></div>
+        <div class="sidebar-brand-text mx-4">Ungu Campus</div>
     </a>
 
     <hr class="sidebar-divider my-0">
 
     <?php
+
+    global $koneksi;
     // Ambil nama file halaman aktif saat ini (misal: index.php)
     $halaman_aktif = basename($_SERVER['PHP_SELF']);
 
@@ -28,7 +30,7 @@
             $status_active = ($halaman_aktif == $main['link']) ? 'active' : '';
     ?>
             <li class="nav-item <?= $status_active; ?>">
-                <a class="nav-link" href="<?= $main['link']; ?>">
+                <a class="nav-link" href="/manajemen-stok/<?= $main['link']; ?>">
                     <i class="<?= $main['icon']; ?>"></i>
                     <span><?= $main['nama_menu']; ?></span>
                 </a>
@@ -53,13 +55,13 @@
                     <span><?= $main['nama_menu']; ?></span>
                 </a>
                 <div id="collapse<?= $id_main; ?>" class="collapse <?= $is_show; ?>" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
+                    <div class=" py-2 collapse-inner rounded dwn">
                         <?php 
                         // Tampilkan semua anak/sub-menu di dalam drop-down
                         while ($sub = mysqli_fetch_array($query_sub)) : 
-                            $sub_active = ($halaman_aktif == $sub['link']) ? 'active font-weight-bold text-primary' : '';
+                            $sub_active = ($halaman_aktif == $sub['link']) ? 'active font-weight-bold bg-none' : '';
                         ?>
-                            <a class="collapse-item <?= $sub_active; ?>" href="<?= $sub['link']; ?>"><?= $sub['nama_menu']; ?></a>
+                            <a class="collapse-item ac <?= $sub_active; ?> text-white" href="/manajemen-stok/<?= $sub['link']; ?>"><?= $sub['nama_menu']; ?></a>
                         <?php endwhile; ?>
                     </div>
                 </div>

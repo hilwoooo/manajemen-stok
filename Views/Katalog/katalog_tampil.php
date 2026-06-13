@@ -1,21 +1,24 @@
 <?php 
-include('koneksi.php'); 
-include('layouts/header.php'); 
-include('layouts/sidebar.php'); 
-include('layouts/topbar.php'); 
+include('../../Config/koneksi.php'); 
+include('../../layouts/header.php'); 
+include('../../layouts/sidebar.php'); 
+include('../../layouts/topbar.php'); 
+require_once '../../proses/tampil_produk.php';
+
+$produk_katalog = tampilKatalog();
 ?>
 
 <div class="container-fluid">
-    <h1 class="h1 mb-4 text-gray-800">Master Katalog Produk</h1>
+    <h1 class="h1 mb-4 text-gray-800 fw-semibold">Master Katalog Produk</h1>
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <button class="h3 btn btn-primary mb-3" data-toggle="modal" data-target="#addKatalogModal">Tambah Produk Baru</button>
+            <button class="h3 btn btn-success mb-3" data-toggle="modal" data-target="#addKatalogModal">Tambah Produk Baru</button>
             
             <div class="table-responsive">
                 <table id="dataTable" class="table table-striped table-bordered nowrap" style="width:100%">
                     <thead>
-                        <tr>
+                        <tr class="bg-primary text-white">
                             <th class="text-center">No</th>
                             <th class="text-center">Merek</th>
                             <th class="text-center">Nama Produk</th>
@@ -27,18 +30,17 @@ include('layouts/topbar.php');
                     </thead>
                     <tbody>
                         <?php 
-                        $query = "SELECT * FROM master_katalog ORDER BY id_katalog DESC";
-                        $tampil = mysqli_query($koneksi, $query);
+                       
                         $i = 1; 
-                        while ($data = mysqli_fetch_array($tampil)) :
+                        while ($data = mysqli_fetch_array($produk_katalog)) :
                         ?>
                         <tr>
                             <td class="text-center"><?= $i; ?></td>
                             <td style="text-transform:uppercase"><strong><?= $data['merek']; ?></strong></td>
                             <td style="text-transform:uppercase"><?= $data['nama_produk']; ?></td>
                             <td class="text-center">
-                                <span class="badge <?= ($data['jenis'] == 'Unit Laptop') ? 'badge-success' : 'badge-info'; ?>">
-                                    <?= $data['jenis']; ?>
+                                <span class="badge <?= ($data['nama_kategori'] == 'Unit Laptop') ? 'badge-success' : 'badge-info'; ?>">
+                                    <?= $data['nama_kategori']; ?>
                                 </span>
                             </td>
                             <td class="text-center">
@@ -67,9 +69,9 @@ include('layouts/topbar.php');
 <div class="modal fade" id="addKatalogModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Daftarkan Produk Baru ke Katalog</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -92,12 +94,12 @@ include('layouts/topbar.php');
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" name="tambah_katalog" class="btn btn-primary">Simpan ke Katalog</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                    <button type="submit" name="tambah_katalog" class="btn btn-success">Simpan ke Katalog</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<?php include('layouts/footer.php'); ?>
+<?php include('../../layouts/footer.php'); ?>

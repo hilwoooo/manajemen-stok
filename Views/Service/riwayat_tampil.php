@@ -1,8 +1,8 @@
 <?php 
-include('koneksi.php'); 
-include('layouts/header.php'); 
-include('layouts/sidebar.php'); 
-include('layouts/topbar.php'); 
+require_once('../../Config/koneksi.php'); 
+include('../../layouts/header.php'); 
+include('../../layouts/sidebar.php'); 
+include('../../layouts/topbar.php'); 
 ?>
 
 <div class="container-fluid">
@@ -113,7 +113,7 @@ include('layouts/topbar.php');
     </div>
 </div>
 
-<?php include('layouts/footer.php'); ?>
+<?php include('../../layouts/footer.php'); ?>
 
 <script>
 $(document).ready(function() {

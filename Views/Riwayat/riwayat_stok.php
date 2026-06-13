@@ -1,8 +1,8 @@
 <?php 
-include('koneksi.php'); 
-include('layouts/header.php'); 
-include('layouts/sidebar.php'); 
-include('layouts/topbar.php'); 
+include('../../Config/koneksi.php'); 
+include('../../layouts/header.php'); 
+include('../../layouts/sidebar.php'); 
+include('../../layouts/topbar.php'); 
 ?>
 
 <div class="container-fluid">
@@ -16,7 +16,7 @@ include('layouts/topbar.php');
             <div class="table-responsive">
                 <table id="dataTable" class="table table-striped table-bordered nowrap" style="width:100%">
                     <thead>
-                        <tr>
+                        <tr class="bg-primary text-white">
                             <th class="text-center" width="5%">No</th>
                             <th class="text-center">Tanggal & Waktu</th>
                             <th class="text-center">Merek & Nama Barang</th>
@@ -64,4 +64,4 @@ include('layouts/topbar.php');
     </div>
 </div>
 
-<?php include('layouts/footer.php'); ?>
+<?php include('../../layouts/footer.php'); ?>

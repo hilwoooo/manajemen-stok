@@ -1,6 +1,8 @@
 <?php
 include('../koneksi.php');
 
+global $koneksi;
+
 //tambah
 if (isset($_POST['tambah_katalog'])) {
     $merek       = mysqli_real_escape_string($koneksi, strtoupper($_POST['merek']));
