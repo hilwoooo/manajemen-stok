@@ -38,17 +38,23 @@ function getKategoriData()
 }
 
 //fungsi menampilkan tabel penjualan barang
-function getPenjualan()
-{
+function getPenjualan() {
     global $koneksi;
-    $query = "SELECT tk.*, b.harga AS harga_modal, b.tanggal_masuk, k.nama_produk, k.merek,  kt.nama_kategori
-                                  FROM tabel_keluar tk
-                                  INNER JOIN tabel_barang AS b ON tk.id_barang = b.id_barang
-                                  INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
-                                  INNER JOIN tabel_kategori AS kt ON b.id_katalog = k.id_katalog
-                                  ORDER BY tk.id_keluar DESC";
-
-    $tampil = mysqli_query($koneksi, $query);
-
-    return $tampil;
+    $query = "SELECT 
+                tk.id_keluar,
+                tk.nama_pembeli,
+                tk.no_hp,
+                tk.total_bayar,
+                tk.tanggal_keluar,
+                tk.qty AS qty,         
+                k.nama_produk,
+                k.merek,
+                kat.nama_kategori        
+              FROM tabel_keluar tk
+              INNER JOIN tabel_barang b ON tk.id_barang = b.id_barang
+              INNER JOIN master_katalog k ON b.id_katalog = k.id_katalog
+              INNER JOIN tabel_kategori kat ON k.id_kategori = kat.id_kategori 
+              ORDER BY tk.tanggal_keluar DESC";
+              
+    return mysqli_query($koneksi, $query);
 }

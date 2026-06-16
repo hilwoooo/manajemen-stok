@@ -10,12 +10,12 @@
     <hr class="sidebar-divider my-0">
 
     <?php
-
     global $koneksi;
-    // Ambil nama file halaman aktif saat ini (misal: index.php)
-    $halaman_aktif = basename($_SERVER['PHP_SELF']);
+    
+    $request_uri = $_SERVER['SCRIPT_NAME'];
+    $halaman_aktif = str_replace('/manajemen-stok/', '', $request_uri);
 
-    // QUERY 1: Ambil semua Menu Utama (yang parent_id nya 0)
+    // QUERY 1: Ambil semua Menu Utama (parent_id = 0)
     $query_main = mysqli_query($koneksi, "SELECT * FROM tabel_menu WHERE parent_id = 0 ORDER BY urutan ASC");
     while ($main = mysqli_fetch_array($query_main)) :
         
@@ -25,44 +25,52 @@
         $query_sub = mysqli_query($koneksi, "SELECT * FROM tabel_menu WHERE parent_id = '$id_main' ORDER BY urutan ASC");
         $punya_sub = mysqli_num_rows($query_sub);
 
-        // JIKA TIDAK PUNYA SUB-MENU (Contoh: Dashboard)
         if ($punya_sub == 0) :
-            $status_active = ($halaman_aktif == $main['link']) ? 'active' : '';
+            // Menghapus slash di awal link database jika ada, agar pencocokan string bersih
+            $menu_link = ltrim($main['link'], '/');
+            $status_active = ($halaman_aktif == $menu_link) ? 'active' : '';
     ?>
             <li class="nav-item <?= $status_active; ?>">
-                <a class="nav-link" href="/manajemen-stok/<?= $main['link']; ?>">
+                <a class="nav-link" href="/manajemen-stok/<?= $menu_link; ?>">
                     <i class="<?= $main['icon']; ?>"></i>
                     <span><?= $main['nama_menu']; ?></span>
                 </a>
             </li>
     <?php 
-        // JIKA PUNYA SUB-MENU (Contoh: Manajemen Gudang, Ruang Teknisi)
+        
         else : 
-            // Logika Biar Otomatis Terbuka (Expand) kalau sub-menunya sedang dibuka
             $sub_links = [];
-            // Ambil semua link sub-menu untuk dicek
-            $query_cek_links = mysqli_query($koneksi, "SELECT link FROM tabel_menu WHERE parent_id = '$id_main'");
-            while($cl = mysqli_fetch_array($query_cek_links)) { $sub_links[] = $cl['link']; }
+            $sub_menu_items = [];
+
+            // Tampung data sub-menu ke dalam array agar tidak merusak perulangan query di bawah
+            while($sm = mysqli_fetch_array($query_sub)) {
+                $sub_menu_items[] = $sm;
+                $sub_links[] = ltrim($sm['link'], '/');
+            }
             
+            // Cek apakah halaman yang sedang diakses ada di dalam daftar sub-menu ini
             $is_show = in_array($halaman_aktif, $sub_links) ? 'show' : '';
             $is_active = in_array($halaman_aktif, $sub_links) ? 'active' : '';
             $is_collapsed = in_array($halaman_aktif, $sub_links) ? '' : 'collapsed';
     ?>
             <li class="nav-item <?= $is_active; ?>">
                 <a class="nav-link <?= $is_collapsed; ?>" href="#" data-toggle="collapse" data-target="#collapse<?= $id_main; ?>"
-                    aria-expanded="true" aria-controls="collapse<?= $id_main; ?>">
+                    aria-expanded="<?= in_array($halaman_aktif, $sub_links) ? 'true' : 'false'; ?>" aria-controls="collapse<?= $id_main; ?>">
                     <i class="<?= $main['icon']; ?>"></i>
                     <span><?= $main['nama_menu']; ?></span>
                 </a>
                 <div id="collapse<?= $id_main; ?>" class="collapse <?= $is_show; ?>" data-parent="#accordionSidebar">
-                    <div class=" py-2 collapse-inner rounded dwn">
+                    <div class="py-2 collapse-inner rounded dwn">
                         <?php 
-                        // Tampilkan semua anak/sub-menu di dalam drop-down
-                        while ($sub = mysqli_fetch_array($query_sub)) : 
-                            $sub_active = ($halaman_aktif == $sub['link']) ? 'active font-weight-bold bg-none' : '';
+                        // Loop data sub-menu dari array yang sudah kita simpan tadi
+                        foreach ($sub_menu_items as $sub) : 
+                            $clean_sub_link = ltrim($sub['link'], '/');
+                            $sub_active = ($halaman_aktif == $clean_sub_link) ? 'active font-weight-bold bg-none' : '';
                         ?>
-                            <a class="collapse-item ac <?= $sub_active; ?> text-white" href="/manajemen-stok/<?= $sub['link']; ?>"><?= $sub['nama_menu']; ?></a>
-                        <?php endwhile; ?>
+                            <a class="collapse-item ac <?= $sub_active; ?> text-white" href="/manajemen-stok/<?= $clean_sub_link; ?>">
+                                <?= $sub['nama_menu']; ?>
+                            </a>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </li>

@@ -1,9 +1,16 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../auth/login.php");
+    exit;
+}
 require_once '../../Config/koneksi.php';
 include('../../layouts/header.php');
 include('../../layouts/sidebar.php');
 include('../../layouts/topbar.php');
-
 ?>
 
 <div class="container-fluid">
@@ -22,6 +29,7 @@ include('../../layouts/topbar.php');
                             <th class="text-center">No HP</th>
                             <th class="text-center">Tipe Laptop</th>
                             <th class="text-center">Keluhan</th>
+                            <th class="text-center">Sparepart Diganti</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Total Biaya</th>
                             <th class="text-center">Action</th>
@@ -29,11 +37,27 @@ include('../../layouts/topbar.php');
                     </thead>
                     <tbody>
                         <?php
-
                         $query = "SELECT * FROM tabel_servis ORDER BY id_servis DESC";
                         $tampil = mysqli_query($koneksi, $query);
                         $i = 1;
                         while ($data = mysqli_fetch_array($tampil)) :
+                            
+                            $id_servis_sekarang = $data['id_servis'];
+                            $daftar_sparepart_tampil = "";
+
+                            // Ambil multi-barang dari tabel_detail_servis untuk ditampilkan di halaman depan
+                            $q_detail = mysqli_query($koneksi, "SELECT k.nama_produk, k.merek FROM tabel_detail_servis d 
+                                                                INNER JOIN tabel_barang b ON d.id_barang = b.id_barang 
+                                                                INNER JOIN master_katalog k ON b.id_katalog = k.id_katalog 
+                                                                WHERE d.id_servis = '$id_servis_sekarang'");
+                            
+                            if(mysqli_num_rows($q_detail) > 0) {
+                                $arr_sp = [];
+                                while($dt_d = mysqli_fetch_array($q_detail)) {
+                                    $arr_sp[] = "- " . strtoupper($dt_d['merek'] . " - " . $dt_d['nama_produk']);
+                                }
+                                $daftar_sparepart_tampil = implode("<br>", $arr_sp);
+                            }
                         ?>
                             <tr>
                                 <td class="text-center"><?= $i; ?></td>
@@ -41,6 +65,7 @@ include('../../layouts/topbar.php');
                                 <td><?= $data['no_hp']; ?></td>
                                 <td style="text-transform:uppercase"><?= $data['tipe_laptop']; ?></td>
                                 <td><?= $data['keluhan']; ?></td>
+                                <td><?= (!empty($daftar_sparepart_tampil)) ? $daftar_sparepart_tampil : '<em class="text-muted">Hanya Jasa</em>'; ?></td>
                                 <td class="text-center">
                                     <span class="badge <?= ($data['status_servis'] == 'Antrean') ? 'badge-warning' : 'badge-success'; ?>">
                                         <?= $data['status_servis']; ?>
@@ -61,7 +86,7 @@ include('../../layouts/topbar.php');
                             </tr>
 
                             <div class="modal fade" id="modalSelesai<?= $data['id_servis']; ?>" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
+                                <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header bg-primary text-white">
                                             <h5 class="modal-title">Penyelesaian Servis: <?= strtoupper($data['nama_pelanggan']); ?></h5>
@@ -69,33 +94,44 @@ include('../../layouts/topbar.php');
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <form action="/manajemen-stok/proses/servis_proses.php" method="post">
+                                        <form action="../../proses/servis_proses.php" method="POST">
                                             <div class="modal-body">
                                                 <input type="hidden" name="id_servis" value="<?= $data['id_servis']; ?>">
 
-                                                <div class="form-group">
-                                                    <label>Ganti Sparepart? (Ambil dari Stok Gudang)</label>
-                                                    <select class="form-control" name="id_barang">
-                                                        <option value="">-- Tidak Ada Pergantian / Hanya Jasa --</option>
-                                                        <?php
-                                                        global $koneksi;
-                                                        //PERBAIKAN: Stok diambil dari k.stok milik master_katalog bukan b.stok
-                                                        $g_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.id_katalog, b.harga, k.stok, k.nama_produk, k.merek 
-                                                                                        FROM tabel_barang b
-                                                                                        INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
-                                                                                        INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
-                                                                                        WHERE ka.nama_kategori='Sparepart' AND k.stok > 0");
-                                                        while ($b = mysqli_fetch_array($g_barang)) {
-                                                            echo "<option value='" . $b['id_barang'] . "'>" . strtoupper($b['merek'] . " - " . $b['nama_produk']) . " (Stok Gudang: " . $b['stok'] . ") - Rp " . number_format($b['harga'], 0, ',', '.') . "</option>";
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                    <small class="text-muted">*Jika dipilih, stok sparepart di master katalog akan otomatis dikurangi 1.</small>
+                                                <div class="form-group mb-3">
+                                                    <label class="font-weight-bold">Biaya Jasa Teknisi (Rupiah)</label>
+                                                    <input type="number" class="form-control" name="biaya_jasa" placeholder="Contoh: 100000" required>
                                                 </div>
 
-                                                <div class="form-group">
-                                                    <label>Biaya Jasa Teknisi (Rupiah)</label>
-                                                    <input type="number" class="form-control" name="biaya_jasa" placeholder="Contoh: 100000" required>
+                                                <hr>
+                                                <h5 class="mb-3 text-gray-800 font-weight-bold">Sparepart Yang Diganti (Opsional)</h5>
+                                                
+                                                <div class="wrapper-sparepart-servis" id="wrapper_servis_<?= $data['id_servis']; ?>">
+                                                    <div class="row form-group baris-sparepart mb-2 align-items-center">
+                                                        <div class="col-md-9">
+                                                            <select class="form-control" name="id_barang[<?= $data['id_servis']; ?>][]">
+                                                                <option value="">-- Tanpa Sparepart / Selesai Diganti --</option>
+                                                                <?php
+                                                                $g_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.harga, k.stok, k.nama_produk, k.merek 
+                                                                                                    FROM tabel_barang b
+                                                                                                    INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
+                                                                                                    INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
+                                                                                                    WHERE LOWER(ka.nama_kategori) = 'sparepart' AND k.stok > 0
+                                                                                                    ORDER BY k.nama_produk ASC");
+                                                                                                    
+                                                                while ($b = mysqli_fetch_array($g_barang)) {
+                                                                    echo "<option value='" . $b['id_barang'] . "'>" . strtoupper($b['merek'] . " - " . $b['nama_produk']) . " (Stok: " . $b['stok'] . ") - Rp " . number_format($b['harga'], 0, ',', '.') . "</option>";
+                                                                }
+                                                                ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="btn-group d-flex" role="group">
+                                                                <button type="button" class="btn btn-success btn-tambah-sp w-100" data-id="<?= $data['id_servis']; ?>">+</button>
+                                                                <button type="button" class="btn btn-danger btn-hapus-sp w-100" disabled>-</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -115,7 +151,6 @@ include('../../layouts/topbar.php');
     </div>
 </div>
 
-
 <div class="modal fade" id="addServisModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -125,7 +160,7 @@ include('../../layouts/topbar.php');
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="proses/servis_proses.php" method="post">
+            <form action="../../proses/servis_proses.php" method="POST">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Nama Pelanggan</label>
@@ -153,6 +188,35 @@ include('../../layouts/topbar.php');
     </div>
 </div>
 
-
 <?php include('../../layouts/footer.php'); ?>
 
+<script>
+document.addEventListener('click', function (e) {
+    if (e.target && e.target.classList.contains('btn-tambah-sp')) {
+        e.preventDefault();
+        var idServis = e.target.getAttribute('data-id');
+        var wrapper = document.getElementById('wrapper_servis_' + idServis);
+        
+        if (wrapper) {
+            var barisPertama = wrapper.querySelector('.baris-sparepart');
+            var barisBaru = barisPertama.cloneNode(true);
+            
+            var selectBaru = barisBaru.querySelector('select');
+            selectBaru.value = "";
+            
+            var btnHapus = barisBaru.querySelector('.btn-hapus-sp');
+            if (btnHapus) {
+                btnHapus.removeAttribute('disabled');
+            }
+            wrapper.appendChild(barisBaru);
+        }
+    }
+    if (e.target && e.target.classList.contains('btn-hapus-sp')) {
+        e.preventDefault();
+        var barisYangDihapus = e.target.closest('.baris-sparepart');
+        if (barisYangDihapus) {
+            barisYangDihapus.remove();
+        }
+    }
+});
+</script>

@@ -1,4 +1,12 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../auth/login.php");
+    exit;
+}
 require_once('../../Config/koneksi.php'); 
 include('../../layouts/header.php'); 
 include('../../layouts/sidebar.php'); 
@@ -71,7 +79,7 @@ include('../../layouts/topbar.php');
                     </thead>
                     <tbody>
                         <?php 
-                        // Query mengambil data servis selesai, direlasikan ke tabel_barang dan master_katalog untuk tahu nama sparepartnya
+                        // query mengambil data servis selesai yg direlasikan ke tabel_barang dan master_katalog untuk ambil nama sparepartnya
                         $query_selesai = "SELECT s.*, k.nama_produk, k.merek 
                                           FROM tabel_servis s
                                           LEFT JOIN tabel_barang b ON s.id_barang = b.id_barang
@@ -118,7 +126,7 @@ include('../../layouts/topbar.php');
 <script>
 $(document).ready(function() {
     $('.dataTableServis').DataTable({
-        "order": [] // Mengikuti urutan ORDER BY dari query PHP kita
+        "order": [] 
     });
 });
 </script>

@@ -1,4 +1,12 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../auth/login.php");
+    exit;
+}
 include('../../Config/koneksi.php'); 
 include('../../layouts/header.php'); 
 include('../../layouts/sidebar.php'); 
@@ -6,7 +14,7 @@ include('../../layouts/topbar.php');
 ?>
 
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Timeline / Jurnal Arus Stok</h1>
+    <h1 class="h3 mb-4 text-gray-800">Riwayat Stok</h1>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3 bg-dark">
@@ -37,7 +45,6 @@ include('../../layouts/topbar.php');
                         $i = 1; 
                         while ($data = mysqli_fetch_array($tampil)) :
                             
-                            // Pewarnaan badge berdasarkan jenis arus barang
                             if($data['jenis_arus'] == 'MASUK') {
                                 $badge = '<span class="badge badge-success"><i class="fas fa-arrow-down"></i> BARANG MASUK</span>';
                                 $qty_color = 'text-success font-weight-bold';
@@ -53,7 +60,7 @@ include('../../layouts/topbar.php');
                             <td class="text-center"><?= date('d-m-Y H:i', strtotime($data['tanggal'])); ?> WIB</td>
                             <td style="text-transform:uppercase"><?= $data['merek'] . ' - ' . $data['nama_produk']; ?></td>
                             <td class="text-center"><?= $badge; ?></td>
-                            <td class="text-center <?= $qty_color; ?>"><?= $sign . ' ' . $data['jumlah']; ?> Pcs</td>
+                            <td class="text-center <?= $qty_color; ?>"><?= $sign . ' ' . $data['qty']; ?> Pcs</td>
                             <td><?= $data['keterangan']; ?></td>
                         </tr>
                         <?php $i++; endwhile; ?>

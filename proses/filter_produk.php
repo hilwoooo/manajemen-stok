@@ -16,4 +16,30 @@ function filterBarang($id_kategori) {
 
     return $tampil;
 }
+
+function filterPenjualan($id_kategori) {
+
+    global $koneksi;
+
+    $query = "SELECT 
+                    tk.*,
+                    b.harga,
+                    b.tanggal_masuk,
+                    k.nama_produk,
+                    k.merek,
+                    kt.nama_kategori
+              FROM tabel_keluar AS tk
+              INNER JOIN tabel_barang AS b 
+              ON tk.id_barang = b.id_barang
+              INNER JOIN master_katalog AS k 
+              ON b.id_katalog = k.id_katalog
+              INNER JOIN tabel_kategori AS kt 
+              ON k.id_kategori = kt.id_kategori
+              WHERE kt.id_kategori = '$id_kategori'
+              ORDER BY tk.id_keluar DESC";
+
+    $tampil = mysqli_query($koneksi, $query);
+    return $tampil;
+
+}
 ?>

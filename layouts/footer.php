@@ -2,7 +2,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2021</span>
+                        <span>Copyright &copy; <span id="year"></span></span>
                     </div>
                 </div>
             </footer>
@@ -42,6 +42,9 @@
 
     <script src="/manajemen-stok/js/demo/chart-area-demo.js"></script>
     <script src="/manajemen-stok/js/demo/chart-pie-demo.js"></script>
+    <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 

@@ -1,6 +1,7 @@
 <?php
 // Ingat, gunakan ../ karena file koneksi berada di luar folder proses
-include(__DIR__ . '/../koneksi.php');
+//include(__DIR__ . '/../koneksi.php');
+require_once __DIR__ . '/../Config/koneksi.php';
 
 // 1. Hitung Total Jenis Barang
 $q_barang = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM tabel_barang");

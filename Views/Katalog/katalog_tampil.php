@@ -1,4 +1,12 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../auth/login.php");
+    exit;
+}
 include('../../Config/koneksi.php'); 
 include('../../layouts/header.php'); 
 include('../../layouts/sidebar.php'); 
@@ -6,6 +14,7 @@ include('../../layouts/topbar.php');
 require_once '../../proses/tampil_produk.php';
 
 $produk_katalog = tampilKatalog();
+
 ?>
 
 <div class="container-fluid">
@@ -39,9 +48,9 @@ $produk_katalog = tampilKatalog();
                             <td style="text-transform:uppercase"><strong><?= $data['merek']; ?></strong></td>
                             <td style="text-transform:uppercase"><?= $data['nama_produk']; ?></td>
                             <td class="text-center">
-                                <span class="badge <?= ($data['nama_kategori'] == 'Unit Laptop') ? 'badge-success' : 'badge-info'; ?>">
-                                    <?= $data['nama_kategori']; ?>
-                                </span>
+                                <span class="badge <?= ($data['nama_kategori'] == 'Unit Laptop') ? 'badge-success' : (($data['nama_kategori'] == 'Aksesoris') ? 'badge-secondary' : 'badge-info'); ?>">
+                                <?= $data['nama_kategori']; ?>
+                            </span>
                             </td>
                             <td class="text-center">
                                 <strong class="<?= ($data['stok'] > 0) ? 'text-primary' : 'text-danger'; ?>">
@@ -50,7 +59,7 @@ $produk_katalog = tampilKatalog();
                                 <td class="text-center"><?= date('d-m-Y H:i', strtotime($data['tanggal'])); ?> WIB</td>
                             </td>
                             <td class="text-center">
-                                <form action="proses/katalog_proses.php" method="post" style="display:inline;">
+                                <form action="../../proses/katalog_proses.php" method="post" style="display:inline;">
                                     <input type="hidden" name="id_katalog" value="<?= $data['id_katalog']; ?>">
                                     <button type="submit" name="hapus_katalog" class="btn btn-danger btn-sm" onclick="return confirm('Menghapus katalog akan menghapus stok barang terkait di gudang. Yakin?');">
                                         <i class="fas fa-trash"></i> Hapus
@@ -58,7 +67,7 @@ $produk_katalog = tampilKatalog();
                                 </form>
                             </td>
                         </tr>
-                        <?php $i++; endwhile; ?>
+                        <?php $i++; endwhile; ?> 
                     </tbody>
                 </table>
             </div>
@@ -75,7 +84,7 @@ $produk_katalog = tampilKatalog();
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="proses/katalog_proses.php" method="post">
+            <form action="../../proses/katalog_proses.php" method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Merek / Brand</label>
@@ -87,9 +96,10 @@ $produk_katalog = tampilKatalog();
                     </div>
                     <div class="form-group">
                         <label>Jenis / Kategori</label>
-                        <select class="form-control" name="jenis" required>
-                            <option value="Sparepart">Sparepart (Komponen Perbaikan)</option>
-                            <option value="Unit Laptop">Unit Laptop (Barang Jadi)</option>
+                        <select class="form-control" name="id_kategori" required>
+                            <option value="1">Sparepart</option>
+                            <option value="2">Unit Laptop</option>
+                            <option value="3">Aksesoris</option>
                         </select>
                     </div>
                 </div>
