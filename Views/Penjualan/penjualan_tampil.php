@@ -141,7 +141,7 @@ if (isset($_GET['id_kategori'])) {
                         <div class="row form-group barang-item mb-3">
                             <div class="col-md-7 mb-2 mb-md-0">
                                 <select class="form-control" name="id_barang[]" required>
-                                    <option value="">-- Pilih Sparepart (FIFO System) --</option>
+                                    <option value="">-- Pilih Sparepart--</option>
                                     <?php
                                     $q_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.harga, b.tanggal_masuk, k.nama_produk, k.merek 
                                                                         FROM tabel_barang b
