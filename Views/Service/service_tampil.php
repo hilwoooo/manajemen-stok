@@ -45,7 +45,6 @@ include('../../layouts/topbar.php');
                             $id_servis_sekarang = $data['id_servis'];
                             $daftar_sparepart_tampil = "";
 
-                            // Ambil multi-barang dari tabel_detail_servis untuk ditampilkan di halaman depan
                             $q_detail = mysqli_query($koneksi, "SELECT k.nama_produk, k.merek FROM tabel_detail_servis d 
                                                                 INNER JOIN tabel_barang b ON d.id_barang = b.id_barang 
                                                                 INNER JOIN master_katalog k ON b.id_katalog = k.id_katalog 
@@ -94,51 +93,49 @@ include('../../layouts/topbar.php');
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <form action="../../proses/servis_proses.php" method="POST">
-                                            <div class="modal-body">
-                                                <input type="hidden" name="id_servis" value="<?= $data['id_servis']; ?>">
+                                        <div class="modal-body">
+                                            <input type="hidden" id="id_servis_<?= $data['id_servis']; ?>" value="<?= $data['id_servis']; ?>">
 
-                                                <div class="form-group mb-3">
-                                                    <label class="font-weight-bold">Biaya Jasa Teknisi (Rupiah)</label>
-                                                    <input type="number" class="form-control" name="biaya_jasa" placeholder="Contoh: 100000" required>
-                                                </div>
+                                            <div class="form-group mb-3">
+                                                <label class="font-weight-bold">Biaya Jasa Teknisi (Rupiah)</label>
+                                                <input type="number" class="form-control" id="biaya_jasa_<?= $data['id_servis']; ?>" placeholder="Contoh: 100000" required>
+                                            </div>
 
-                                                <hr>
-                                                <h5 class="mb-3 text-gray-800 font-weight-bold">Sparepart Yang Diganti (Opsional)</h5>
-                                                
-                                                <div class="wrapper-sparepart-servis" id="wrapper_servis_<?= $data['id_servis']; ?>">
-                                                    <div class="row form-group baris-sparepart mb-2 align-items-center">
-                                                        <div class="col-md-9">
-                                                            <select class="form-control" name="id_barang[<?= $data['id_servis']; ?>][]">
-                                                                <option value="">-- Tanpa Sparepart / Selesai Diganti --</option>
-                                                                <?php
-                                                                $g_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.harga, k.stok, k.nama_produk, k.merek 
-                                                                                                    FROM tabel_barang b
-                                                                                                    INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
-                                                                                                    INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
-                                                                                                    WHERE LOWER(ka.nama_kategori) = 'sparepart' AND k.stok > 0
-                                                                                                    ORDER BY k.nama_produk ASC");
-                                                                                                    
-                                                                while ($b = mysqli_fetch_array($g_barang)) {
-                                                                    echo "<option value='" . $b['id_barang'] . "'>" . strtoupper($b['merek'] . " - " . $b['nama_produk']) . " (Stok: " . $b['stok'] . ") - Rp " . number_format($b['harga'], 0, ',', '.') . "</option>";
-                                                                }
-                                                                ?>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="btn-group d-flex" role="group">
-                                                                <button type="button" class="btn btn-success btn-tambah-sp w-100" data-id="<?= $data['id_servis']; ?>">+</button>
-                                                                <button type="button" class="btn btn-danger btn-hapus-sp w-100" disabled>-</button>
-                                                            </div>
+                                            <hr>
+                                            <h5 class="mb-3 text-gray-800 font-weight-bold">Sparepart Yang Diganti (Opsional)</h5>
+                                            
+                                            <div class="wrapper-sparepart-servis" id="wrapper_servis_<?= $data['id_servis']; ?>">
+                                                <div class="row form-group baris-sparepart mb-2 align-items-center">
+                                                    <div class="col-md-9">
+                                                        <select class="form-control select-sparepart">
+                                                            <option value="">-- Tanpa Sparepart / Selesai Diganti --</option>
+                                                            <?php
+                                                            $g_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.harga, k.stok, k.nama_produk, k.merek 
+                                                                                                FROM tabel_barang b
+                                                                                                INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
+                                                                                                INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
+                                                                                                WHERE LOWER(ka.nama_kategori) = 'sparepart' AND k.stok > 0
+                                                                                                ORDER BY k.nama_produk ASC");
+                                                                                                
+                                                            while ($b = mysqli_fetch_array($g_barang)) {
+                                                                echo "<option value='" . $b['id_barang'] . "'>" . strtoupper($b['merek'] . " - " . $b['nama_produk']) . " (Stok: " . $b['stok'] . ") - Rp " . number_format($b['harga'], 0, ',', '.') . "</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="btn-group d-flex" role="group">
+                                                            <button type="button" class="btn btn-success btn-tambah-sp w-100" data-id="<?= $data['id_servis']; ?>">+</button>
+                                                            <button type="button" class="btn btn-danger btn-hapus-sp w-100" disabled>-</button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
-                                                <button type="submit" name="servis_selesai" class="btn btn-success">Simpan & Selesai</button>
-                                            </div>
-                                        </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                                            <button type="button" class="btn btn-success btn-submit-selesai" data-id="<?= $data['id_servis']; ?>">Simpan & Selesai</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -191,32 +188,54 @@ include('../../layouts/topbar.php');
 <?php include('../../layouts/footer.php'); ?>
 
 <script>
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.classList.contains('btn-tambah-sp')) {
-        e.preventDefault();
-        var idServis = e.target.getAttribute('data-id');
-        var wrapper = document.getElementById('wrapper_servis_' + idServis);
-        
-        if (wrapper) {
-            var barisPertama = wrapper.querySelector('.baris-sparepart');
-            var barisBaru = barisPertama.cloneNode(true);
-            
-            var selectBaru = barisBaru.querySelector('select');
-            selectBaru.value = "";
-            
-            var btnHapus = barisBaru.querySelector('.btn-hapus-sp');
-            if (btnHapus) {
-                btnHapus.removeAttribute('disabled');
-            }
-            wrapper.appendChild(barisBaru);
-        }
+// Tambah baris sparepart baru
+$(document).on('click', '.btn-tambah-sp', function() {
+    var idServis = $(this).attr('data-id');
+    var wrapper = $('#wrapper_servis_' + idServis);
+    var barisBaru = wrapper.find('.baris-sparepart:first').clone();
+    barisBaru.find('select').val('');
+    barisBaru.find('.btn-hapus-sp').removeAttr('disabled');
+    wrapper.append(barisBaru);
+});
+
+// Hapus baris sparepart
+$(document).on('click', '.btn-hapus-sp', function() {
+    $(this).closest('.baris-sparepart').remove();
+});
+
+// Submit pakai form dinamis agar tidak terpengaruh posisi modal di DOM
+$(document).on('click', '.btn-submit-selesai', function() {
+    var idServis = $(this).attr('data-id');
+    var biayaJasa = $('#biaya_jasa_' + idServis).val();
+
+    if (!biayaJasa) {
+        alert('Biaya jasa wajib diisi!');
+        return;
     }
-    if (e.target && e.target.classList.contains('btn-hapus-sp')) {
-        e.preventDefault();
-        var barisYangDihapus = e.target.closest('.baris-sparepart');
-        if (barisYangDihapus) {
-            barisYangDihapus.remove();
+
+    // Kumpulkan semua id_barang yang dipilih
+    var barangList = [];
+    $('#wrapper_servis_' + idServis).find('select.select-sparepart').each(function() {
+        if ($(this).val() != '') {
+            barangList.push($(this).val());
         }
-    }
+    });
+
+    // Buat form dinamis dan submit ke servis_proses.php
+    var form = $('<form>', {
+        method: 'POST',
+        action: '../../proses/servis_proses.php'
+    });
+
+    form.append($('<input>', { type: 'hidden', name: 'id_servis',     value: idServis  }));
+    form.append($('<input>', { type: 'hidden', name: 'biaya_jasa',    value: biayaJasa }));
+    form.append($('<input>', { type: 'hidden', name: 'servis_selesai', value: ''       }));
+
+    $.each(barangList, function(i, val) {
+        form.append($('<input>', { type: 'hidden', name: 'id_barang[]', value: val }));
+    });
+
+    $('body').append(form);
+    form.submit();
 });
 </script>

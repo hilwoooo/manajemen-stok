@@ -11,17 +11,19 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 
+// proses ketika form login dikirim
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once __DIR__ . '/../../Config/koneksi.php'; 
 
-    //validasi input
+    // input data nama dan password
     $nama     = trim($_POST['nama'] ?? '');
     $password = $_POST['password'] ?? '';
 
+    // Validasi input tidak kosong
     if ($nama === '' || $password === '') {
         $error = 'Nama dan password wajib diisi.';
     } else {
-        //query database dg prepare statment
+        // Query ambil data user dengan prepare statement
         $stmt = mysqli_prepare($koneksi, "SELECT id_user, nama, password FROM tabel_user WHERE nama = ?");
         
         if ($stmt) {
@@ -30,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = mysqli_stmt_get_result($stmt);
             $user = mysqli_fetch_assoc($result);
 
-            // Verifikasi password dan sesion
+            // proses verifikasi password dan pembuatan session
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id']  = $user['id_user'];
                 $_SESSION['nama']     = $user['nama'];

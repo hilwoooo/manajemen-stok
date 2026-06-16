@@ -11,14 +11,17 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 
+// proses ketika form register dikirim
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once __DIR__ . '/../../Config/koneksi.php';
-    //ambil input dari formnya
+    
+    // ambil input dari formnya
     $nama       = trim($_POST['nama'] ?? '');
     $email      = trim($_POST['email'] ?? '');
     $password   = $_POST['password'] ?? '';
     $konfirmasi = $_POST['konfirmasi_password'] ?? '';
-    //validasi input
+    
+    // validasi input tidak kosong dan sesuai ketentuan
     if (empty($nama) || empty($email) || empty($password) || empty($konfirmasi)) {
         $error = 'Semua field wajib diisi.';
     } elseif (strlen($nama) < 4) {
@@ -31,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $konfirmasi) {
         $error = 'Konfirmasi password tidak cocok.';
     } else {
-        //cek duplikasi naama dan atau email
+        // proses cek duplikasi nama dan atau email di database
         $cek = mysqli_prepare($koneksi, "SELECT id_user FROM tabel_user WHERE nama = ? OR email = ?");
         mysqli_stmt_bind_param($cek, 'ss', $nama, $email);
         mysqli_stmt_execute($cek);
@@ -40,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_stmt_num_rows($cek) > 0) {
             $error = 'Nama atau Email sudah digunakan, silakan pilih yang lain.';
         } else {
-            //pasword hash
+            // proses hash password untuk keamanan
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
             
-            //Proses Masukkan data ke database (3 kolom = 3 tanda tanya = 'sss')
+            // Query untuk menyimpan data user baru
             $stmt = mysqli_prepare($koneksi, "INSERT INTO tabel_user (nama, email, password) VALUES (?, ?, ?)");
             mysqli_stmt_bind_param($stmt, 'sss', $nama, $email, $password_hash);
 
@@ -56,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Gagal menyimpan data. Coba lagi.';
             }
-            //tutup statment
+            // tutup statment
             mysqli_stmt_close($stmt);
         }
         mysqli_stmt_close($cek);
