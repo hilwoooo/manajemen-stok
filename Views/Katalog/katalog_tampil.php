@@ -92,7 +92,7 @@ $produk_katalog = tampilKatalog();
                     </div>
                     <div class="form-group">
                         <label>Nama Produk</label>
-                        <input type="text" class="form-control" name="nama_produk" placeholder="Contoh: RAM DDR4 8GB, ROG Strix G15" required style="text-transform:uppercase">
+                        <input type="text" class="form-control" name="nama_produk" placeholder="Contoh: RAM 8gb, SSD" required style="text-transform:uppercase">
                     </div>
                     <div class="form-group">
                         <label>Jenis / Kategori</label>

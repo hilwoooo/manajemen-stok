@@ -111,11 +111,17 @@ include('../../layouts/topbar.php');
                                                             <option value="">-- Tanpa Sparepart / Selesai Diganti --</option>
                                                             <?php
                                                             $g_barang = mysqli_query($koneksi, "SELECT b.id_barang, b.harga, k.stok, k.nama_produk, k.merek 
-                                                                                                FROM tabel_barang b
-                                                                                                INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
-                                                                                                INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
-                                                                                                WHERE LOWER(ka.nama_kategori) = 'sparepart' AND k.stok > 0
-                                                                                                ORDER BY k.nama_produk ASC");
+                                                            FROM tabel_barang b
+                                                            INNER JOIN master_katalog AS k ON b.id_katalog = k.id_katalog
+                                                            INNER JOIN tabel_kategori AS ka ON k.id_kategori = ka.id_kategori
+                                                            WHERE LOWER(ka.nama_kategori) = 'sparepart' AND k.stok > 0
+                                                            AND b.id_barang IN (
+                                                                SELECT MIN(id_barang) 
+                                                                FROM tabel_barang 
+                                                                WHERE stok_masuk > 0 
+                                                                GROUP BY id_katalog
+                                                            )
+                                                            ORDER BY k.nama_produk ASC");
                                                                                                 
                                                             while ($b = mysqli_fetch_array($g_barang)) {
                                                                 echo "<option value='" . $b['id_barang'] . "'>" . strtoupper($b['merek'] . " - " . $b['nama_produk']) . " (Stok: " . $b['stok'] . ") - Rp " . number_format($b['harga'], 0, ',', '.') . "</option>";
