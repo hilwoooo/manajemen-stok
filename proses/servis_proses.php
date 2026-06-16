@@ -3,9 +3,7 @@ require_once __DIR__ . '/../Config/koneksi.php';
 
 global $koneksi;
 
-// ==========================================
-// 1. PROSES TAMBAH ORANG SERVIS (ANTREAN BARU)
-// ==========================================
+//tambah orang servis
 if (isset($_POST['tambah_servis'])) {
     $nama_pelanggan = mysqli_real_escape_string($koneksi, $_POST['nama_pelanggan']);
     $no_hp          = mysqli_real_escape_string($koneksi, $_POST['no_hp']);
@@ -23,9 +21,7 @@ if (isset($_POST['tambah_servis'])) {
     }
 }
 
-// ==========================================
-// 2. PROSES SERVIS SELESAI
-// ==========================================
+//proses servis selesai
 if (isset($_POST['servis_selesai'])) {
     $id_servis  = mysqli_real_escape_string($koneksi, $_POST['id_servis']);
     $biaya_jasa = (int)$_POST['biaya_jasa'];
@@ -54,7 +50,7 @@ if (isset($_POST['servis_selesai'])) {
         }
     }
 
-    // JIKA HANYA BAYAR JASA TEKNISI (Tanpa ganti part)
+    // jika hanya jas (Tanpa ganti part)
     if (empty($barang_tergabung)) {
         mysqli_query($koneksi, "UPDATE tabel_servis SET 
                                 status_servis = 'Selesai', 
@@ -67,7 +63,7 @@ if (isset($_POST['servis_selesai'])) {
         exit();
     }
 
-    // TAHAP 2: Validasi stok terlebih dahulu sebelum eksekusi
+    // Validasi stok terlebih dahulu sebelum eksekusi
     $data_siap_simpan = [];
     $total_harga_sparepart = 0;
 
