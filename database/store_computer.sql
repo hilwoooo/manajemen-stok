@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Waktu pembuatan: 16 Jun 2026 pada 15.56
+-- Waktu pembuatan: 17 Jun 2026 pada 04.56
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -176,7 +176,8 @@ INSERT INTO `tabel_menu` (`id_menu`, `nama_menu`, `link`, `icon`, `parent_id`, `
 (6, 'Riwayat Servis Selesai', 'views/service/riwayat_service.php', '', 3, 2),
 (7, 'Master Katalog Produk', 'views/katalog/katalog_tampil.php', 'fas fa-solid fa-key', 0, 1),
 (8, 'Penjualan', 'views/penjualan/penjualan_tampil.php', NULL, 2, 2),
-(9, 'Riwayat', 'views/riwayat/riwayat_stok.php', 'fas fa-file', 0, 3);
+(9, 'Riwayat', 'views/riwayat/riwayat_stok.php', 'fas fa-file', 0, 3),
+(10, 'Laporan', 'views/laporan/laporan_iventaris.php', 'fas fa-solid fa-copy', 0, 4);
 
 -- --------------------------------------------------------
 
@@ -364,7 +365,7 @@ ALTER TABLE `tabel_keluar`
 -- AUTO_INCREMENT untuk tabel `tabel_menu`
 --
 ALTER TABLE `tabel_menu`
-  MODIFY `id_menu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_menu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `tabel_riwayat_stok`
